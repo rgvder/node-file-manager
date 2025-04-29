@@ -7,6 +7,7 @@ import {showCurrentDir} from './utils/show-current-dir.js';
 import {lsCommand} from './nwd/ls.js';
 import {osEolCommand} from './os/eol.js';
 import {osCpusCommand} from './os/cpus.js';
+import {osUsernameCommand} from './os/username.js';
 
 const name = getUsername();
 
@@ -50,6 +51,10 @@ process.stdin.on('data', async(input) => {
     }
     case command === 'os' && args.length === 1 && args[0] === '--cpus': {
       await osCpusCommand();
+      break;
+    }
+    case command === 'os' && args.length === 1 && args[0] === '--username': {
+      await osUsernameCommand();
       break;
     }
     case command === '.exit' && !args.length: {
