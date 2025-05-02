@@ -1,5 +1,5 @@
 import { EOL } from 'node:os';
 
-export const osEolCommand = () => {
-  process.stdout.write(`${JSON.stringify(EOL)}\n`);
+export const osEol = () => {
+  process.stdout.write(`Default system End-Of-Line: ${JSON.stringify(EOL)}\n`);
 }

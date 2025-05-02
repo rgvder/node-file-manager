@@ -1,27 +1,19 @@
-import { readdir, stat } from 'node:fs/promises';
-import { join } from 'node:path';
+import { readdir } from 'node:fs/promises';
 
-//TODO check and add []
-export const lsCommand = async () => {
-  const content = await readdir(process.cwd());
+export const ls = async () => {
+  const content = await readdir(process.cwd(), { withFileTypes: true });
 
-  const tableContent = await [...content]
-    .sort((a, b) => a.localeCompare(b))
-    .reduce(async (res, item) => {
-      const asyncRes = await res;
-
-      const fullPath = join(process.cwd(), item);
-      const statItem = await stat(fullPath);
-
-      if (statItem.isDirectory()) {
-        asyncRes[0].push({Name: item, Type: 'directory'});
-      } else {
-        asyncRes[1].push({Name: item, Type: 'file'});
+  const tableContent = [...content]
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .reduce((res, item) => {
+      if (item.isDirectory()) {
+        res[0].push({ Name: item.name, Type: 'directory' });
+      } else if (item.isFile()) {
+        res[1].push({ Name: item.name, Type: 'file' });
       }
 
-      return asyncRes;
-
-    }, Promise.resolve([[], []]))
+      return res;
+    }, [[], []])
 
   console.table([...tableContent[0], ...tableContent[1]]);
 }

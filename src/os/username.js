@@ -1,7 +1,7 @@
 import { userInfo } from 'node:os';
 
-export const osUsernameCommand = () => {
+export const osUsername = () => {
   const name = userInfo().username;
 
-  process.stdout.write(`${name}\n`);
+  process.stdout.write(`System user name: ${name}\n`);
 }

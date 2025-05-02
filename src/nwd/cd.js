@@ -1,33 +1,29 @@
-import {isAbsolute, resolve} from 'node:path';
-import {access} from 'fs/promises';
-import {constants} from 'fs';
+import { isAbsolute, resolve, dirname } from 'node:path';
 
-export const cdCommand = async (args) => {
-  console.log('process.cwd()', process.cwd());
+import { NO_ACCESS, ROOT_DIRECTORY } from '../constants/info-messages.js';
+import { ERROR_CODES } from '../constants/error-code.js';
 
-  if (!args.length) {
-    process.stdout.write('Error: No path for cd\n');
-  } else if (args.length > 1) {
-    process.stdout.write('Error: Invalid path for cd\n');
-  } else {
-    let targetPath = args.join(' ').trim();
+export const cd = async (args) => {
+  const path = args[0].trim();
 
-    console.log('targetPath', targetPath);
+  const currentPath = isAbsolute(path)
+    ? path
+    : resolve(process.cwd(), path);
 
-    if (!isAbsolute(targetPath)) {
-      targetPath = resolve(process.cwd(), targetPath);
-    }
-    try {
-      await access(targetPath, constants.R_OK);
-      process.chdir(targetPath);
-    } catch (error) {
-      const errorText = error?.code === 'ENOENT'
-        ? `No such directory: ${targetPath}`
-        : error?.code === 'EACCES'
-          ? `No access`
-          : `Cannot change directory to ${targetPath}`;
+  //TODO
+  if (dirname(currentPath) === currentPath) {
+    throw new Error(ROOT_DIRECTORY);
+  }
 
-      process.stdout.write(`Operation failed: ${errorText}\n`);
-    }
+  try {
+    process.chdir(currentPath);
+  } catch (error) {
+    const errorText = error?.code === ERROR_CODES.ENOENT
+      ? `No such directory: ${currentPath}`
+      : error?.code === ERROR_CODES.EACCES
+        ? NO_ACCESS
+        : `Cannot change directory to ${currentPath}`;
+
+    throw new Error(errorText);
   }
 };

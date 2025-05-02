@@ -1,6 +1,7 @@
 import {cpus} from 'node:os';
 
-export const osCpusCommand = () => {
+//TODO: доделать
+export const osCpus = () => {
   process.stdout.write(JSON.stringify(cpus()));
   console.log(cpus());
 }

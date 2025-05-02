@@ -1,76 +1,37 @@
-import { homedir } from 'os';
+import { homedir } from 'node:os';
+import readline from 'node:readline';
 
 import { getUsername } from './utils/get-username.js';
-import {upCommand} from './nwd/up.js';
-import {cdCommand} from './nwd/cd.js';
-import {showCurrentDir} from './utils/show-current-dir.js';
-import {lsCommand} from './nwd/ls.js';
-import {osEolCommand} from './os/eol.js';
-import {osCpusCommand} from './os/cpus.js';
-import {osUsernameCommand} from './os/username.js';
+import { showCurrentDir } from './utils/show-current-dir.js';
+import { executeCommand } from './utils/execute-command.js';
 
 const name = getUsername();
 
 process.chdir(homedir());
 
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  prompt: '> '
+});
+
 const exit = () => {
   showCurrentDir();
-  process.stdout.write(`Thank you for using File Manager, ${name}, goodbye!\n`);
+  console.log(`Thank you for using File Manager, ${name}, goodbye!`);
+  rl.close();
   process.exit(0);
-}
+};
 
-process.stdout.write(`Welcome to the File Manager, ${name}!\n`);
+console.log(`Welcome to the File Manager, ${name}!`);
 showCurrentDir();
+rl.prompt();
 
-process.stdin.setEncoding('utf-8');
-
-process.stdin.on('data', async(input) => {
-  const [command, ...args] = input.trim().split(' ');
-
-  console.log('args:', args);
-
-  //TODO: add args error handlers
-
-  switch (true) {
-    case command === 'up': {
-      upCommand(args.length);
-      break;
-    }
-    case command === 'cd': {
-      await cdCommand(args);
-      break;
-    }
-    case command === 'ls': {
-      await lsCommand();
-      break;
-    }
-
-    case command === 'os' && args.length === 1 && args[0] === '--EOL': {
-      await osEolCommand();
-      break;
-    }
-    case command === 'os' && args.length === 1 && args[0] === '--cpus': {
-      await osCpusCommand();
-      break;
-    }
-    case command === 'os' && args.length === 1 && args[0] === '--username': {
-      await osUsernameCommand();
-      break;
-    }
-    case command === '.exit' && !args.length: {
-      exit();
-      break;
-    }
-
-    default: {
-      process.stdout.write(`Invalid command: ${command}, please try again\n`);
-    }
-  }
-
+rl.on('line', async (input) => {
+  await executeCommand(input.trim(), rl);
   showCurrentDir();
+  //TODO
+  rl.prompt();
 });
 
-process.on('SIGINT', () => {
-  exit();
-});
-
+rl.on('SIGINT', exit);
+process.on('SIGINT', exit);

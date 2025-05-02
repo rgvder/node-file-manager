@@ -1,21 +1,17 @@
 import { dirname } from 'node:path';
-import {homedir} from 'os';
+import { ROOT_DIRECTORY } from '../constants/info-messages.js';
 
-//TODO
-//User can't go upper than root directory (e.g. on Windows it's current local drive root).
-// If user tries to do so, current working directory doesn't change
+export const up = () => {
+  const currentDir = process.cwd();
+  const parentDir = dirname(currentDir);
 
-export const upCommand = (argsLen) => {
-  if (argsLen) {
-    process.stdout.write('Error: Unexpected arguments\n');
-    return;
+  if (parentDir === currentDir) {
+    throw new Error(ROOT_DIRECTORY);
   }
-
-  if (process.cwd() === homedir()) return;
 
   try {
-    process.chdir(dirname(process.cwd()));
+    process.chdir(parentDir);
   } catch {
-    process.stdout.write(`Operation failed: Cannot move up from ${process.cwd()}\n`);
+    throw new Error(`Cannot move up from ${currentDir}`);
   }
-}
+};
