@@ -1,5 +1,7 @@
 import { arch } from 'node:os';
 
+import { stdoutWrite } from '../utils/stdout-write.js';
+
 export const osArch = () => {
-  process.stdout.write(`CPU architecture: ${arch()}\n`);
+  stdoutWrite(`CPU architecture: ${arch()}`);
 }

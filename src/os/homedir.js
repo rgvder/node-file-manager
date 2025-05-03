@@ -1,5 +1,7 @@
 import { homedir } from 'node:os';
 
+import { stdoutWrite } from '../utils/stdout-write.js';
+
 export const osHomedir = () => {
-  process.stdout.write(`Home directory: ${homedir()}\n`);
+  stdoutWrite(`Home directory: ${homedir()}`);
 }
