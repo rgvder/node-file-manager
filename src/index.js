@@ -2,12 +2,10 @@ import { homedir } from 'node:os';
 import readline from 'node:readline';
 
 import { getUsername } from './utils/get-username.js';
-import { showCurrentDir } from './utils/show-current-dir.js';
 import { executeCommand } from './utils/execute-command.js';
+import {stdoutWrite} from './utils/stdout-write.js';
 
 const name = getUsername();
-
-process.chdir(homedir());
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -16,22 +14,27 @@ const rl = readline.createInterface({
 });
 
 const exit = () => {
-  showCurrentDir();
-  console.log(`Thank you for using File Manager, ${name}, goodbye!`);
+  stdoutWrite(`Thank you for using File Manager, ${name}, goodbye!`);
   rl.close();
-  process.exit(0);
 };
 
-console.log(`Welcome to the File Manager, ${name}!`);
-showCurrentDir();
-rl.prompt();
+const writeLine = () => {
+  stdoutWrite(`You are currently in ${process.cwd()}`);
+  rl.prompt();
+};
+
+process.chdir(homedir());
+stdoutWrite(`Welcome to the File Manager, ${name}!\n`);
+writeLine();
 
 rl.on('line', async (input) => {
-  await executeCommand(input.trim(), rl);
-  showCurrentDir();
-  //TODO
-  rl.prompt();
+  if (input.trim() === '.exit') {
+    exit();
+    return;
+  }
+
+  await executeCommand(input, rl);
+  writeLine();
 });
 
 rl.on('SIGINT', exit);
-process.on('SIGINT', exit);

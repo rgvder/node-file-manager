@@ -1,26 +1,24 @@
 import { commands } from '../constants/commands.js';
 import { isArgsCountValid } from './is-args-count-valid.js';
 import { INVALID_COMMAND } from '../constants/info-messages.js';
+import { stdoutWrite } from './stdout-write.js';
 
-export const executeCommand = async (input, rl) => {
+export const executeCommand = async (input) => {
   const [command, ...args] = input.trim().split(/\s+/);
 
   if (!command) {
-    process.stdout.write(`No command, please try again\n`);
-    rl.prompt();
+    stdoutWrite(`No command, please try again`);
     return;
   }
 
   if (!Object.keys(commands).includes(command)) {
-    process.stdout.write(`${INVALID_COMMAND}\n`);
-    rl.prompt();
+    stdoutWrite(INVALID_COMMAND);
     return;
   }
 
   const [ argsCount, handler ] = commands[command];
 
   if (!isArgsCountValid(argsCount, args.length)) {
-    rl.prompt();
     return;
   }
 
@@ -31,8 +29,6 @@ export const executeCommand = async (input, rl) => {
       await handler();
     }
   } catch (error) {
-    process.stdout.write(`Operation failed: ${error.message}\n`);
-  } finally {
-    rl.prompt();
+    stdoutWrite(`Operation failed: ${error.message}`);
   }
 };
