@@ -14,7 +14,7 @@ const rl = readline.createInterface({
 });
 
 const exit = () => {
-  stdoutWrite(`Thank you for using File Manager, ${name}, goodbye!`);
+  stdoutWrite(`\nThank you for using File Manager, ${name}, goodbye!`);
   rl.close();
 };
 

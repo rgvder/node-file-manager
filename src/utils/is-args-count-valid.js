@@ -6,7 +6,7 @@ export const isArgsCountValid = (expectedCount, argsCount) => {
       text = `Expected ${expectedCount} argument${expectedCount > 1 ? 's': ''}`;
     }
 
-    process.stdout.write(`Args error: ${text}, but got ${argsCount}\n`);
+    process.stdout.write(`Invalid input: ${text}, but got ${argsCount}\n`);
     return false;
   }
 

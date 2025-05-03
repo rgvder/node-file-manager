@@ -1,13 +1,18 @@
 import { unlink } from 'node:fs/promises';
-import { join } from 'node:path';
+
+import { formatPath } from '../utils/format-path.js';
+import { ERROR_CODES } from '../constants/error-code.js';
 
 export const rm = async (args) => {
-  const filePath = join(process.cwd(), args[0]);
+  const filePath = formatPath(args[0]);
 
-  //TODO
   try {
     await unlink(filePath);
-  } catch {
-    throw new Error('Cannot delete file');
+  } catch(error) {
+    const errorText = error?.code === ERROR_CODES.ENOENT
+      ? `No such file: ${filePath}`
+      : error.message;
+
+    throw new Error(errorText);
   }
 };
