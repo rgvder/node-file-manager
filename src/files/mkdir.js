@@ -11,7 +11,7 @@ export const mkdir = async (args) => {
   } catch (error) {
     const errorText = error.code === ERROR_CODES.EEXIST
       ? 'Directory already exists'
-      : 'Cannot create a directory';
+      : error.message;
 
     throw new Error(errorText);
   }

@@ -11,7 +11,7 @@ export const add = async (args) => {
   } catch (error) {
     const errorText = error.code === ERROR_CODES.EEXIST
       ? 'File already exists'
-      : 'Cannot create file';
+      : error.message;
 
     throw new Error(errorText);
   }

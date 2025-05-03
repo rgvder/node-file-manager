@@ -1,27 +1,29 @@
 import { createReadStream } from 'node:fs';
-import { join } from 'node:path';
 
 import { NO_ACCESS } from '../constants/info-messages.js';
 import { ERROR_CODES } from '../constants/error-code.js';
+import { formatPath } from '../utils/format-path.js';
 
-export const cat = (args) => {
-  const filePath = join(process.cwd(), args[0]);
-  const rs = createReadStream(filePath);
+export const cat = async (args) => {
+  const filePath = formatPath(args[0]);
 
-  rs.on('error', (error) => {
-    const errorText = error?.code === ERROR_CODES.ENOENT
-      ? `No such file: ${filePath}`
-      : error?.code === ERROR_CODES.EACCES
-        ? NO_ACCESS
-        : `Cannot read file: ${filePath}`;
+  return new Promise((resolve, reject) => {
+    const rs = createReadStream(filePath);
 
-    throw new Error(errorText);
-  })
+    rs.on('error', (error) => {
+      const errorText = error?.code === ERROR_CODES.ENOENT
+        ? `No such file: ${filePath}`
+        : error?.code === ERROR_CODES.EACCES
+          ? NO_ACCESS
+          : error.message;
 
-  rs.pipe(process.stdout);
+      reject(new Error(errorText));
+    });
 
-  //TODO
-  rs.on('end', () => {
-    process.stdout.write('\n');
+    rs.on('end', () => {
+      resolve();
+    });
+
+    rs.pipe(process.stdout);
   });
 };
