@@ -1,7 +1,14 @@
 import {cpus} from 'node:os';
+import {stdoutWrite} from '../utils/stdout-write.js';
 
-//TODO: доделать
 export const osCpus = () => {
-  process.stdout.write(JSON.stringify(cpus()));
-  console.log(cpus());
+  const content = cpus().map(({ model, speed }) => (
+    {
+      Model: model,
+      'Clock rate (in GHz)': speed / 1000,
+    }
+  ))
+
+  stdoutWrite(`Amount of CPUS: ${cpus().length}`);
+  console.table(content);
 }
