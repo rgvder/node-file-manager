@@ -3,7 +3,7 @@ import readline from 'node:readline';
 
 import { getUsername } from './utils/get-username.js';
 import { executeCommand } from './utils/execute-command.js';
-import {stdoutWrite} from './utils/stdout-write.js';
+import { stdoutWrite } from './utils/stdout-write.js';
 
 const name = getUsername();
 
